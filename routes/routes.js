@@ -35,7 +35,6 @@ var appRouter = function (app) {
             json: true
         }
         request.post(options, function (error, response, body) {
-            console.log(options.body);
             let to = options.body.to;
             let from = options.body.from;
             let amount = options.body.amount;
