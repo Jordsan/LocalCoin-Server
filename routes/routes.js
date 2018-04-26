@@ -1,19 +1,13 @@
-const request = require('request');
+const request = require('request-promise');
 
 var appRouter = function (app) {
-    app.get("/api", function (req, res) {
-        let data = {
-            response: 'my localcoin api'
-        }
-        res.status(200).send(data);
-    });
     app.get('/api/wallets/:id', function (req, res) {
         let options = {
             method: 'GET',
             uri: `https://local-coin.firebaseio.com/wallets/${req.params.id}/.json`,
             json: true
         }
-        request.get(options, function (error, response, body) {
+        request(options, function (error, response, body) {
             res.status(200).send(body);
         });
     });
@@ -23,24 +17,78 @@ var appRouter = function (app) {
             uri: 'https://local-coin.firebaseio.com/transactions.json',
             json: true
         }
-        request.get(options, function (error, response, body) {
+        request(options, function (error, response, body) {
             res.status(200).send(body);
         });
     });
     app.post('/api/transactions', function (req, res) {
+
         let options = {
-            method: 'GET',
+            method: 'POST',
             body: req.body,
             uri: 'https://local-coin.firebaseio.com/transactions.json',
             json: true
         }
-        request.post(options, function (error, response, body) {
-            let to = options.body.to;
-            let from = options.body.from;
+        let optionsTo = {
+            method: 'GET',
+            uri: `https://local-coin.firebaseio.com/wallets/${req.body.to}/.json`,
+            json: true
+        }
+        let optionsFrom = {
+            method: 'GET',
+            uri: `https://local-coin.firebaseio.com/wallets/${req.body.from}/.json`,
+            json: true
+        }
+
+        if (options.body.amount < 0) {
+            res.sendStatus(422);
+        }
+        else {
             let amount = options.body.amount;
-            console.log(to, from, amount);
-            res.status(200).send(body);
-        });
+            request(optionsFrom).then(function (respFrom) {
+                let balanceFrom = respFrom.balance;
+
+                let optionsPutFrom = {
+                    method: 'PUT',
+                    body: {
+                        balance: balanceFrom - amount
+                    },
+                    uri: `https://local-coin.firebaseio.com/wallets/${options.body.from}.json`,
+                    json: true
+                }
+
+                if (balanceFrom >= amount) {
+                    request(optionsPutFrom).then(function (respPutTo) {
+
+                    });
+                    request(optionsTo).then(function (respTo) {
+                        let balanceTo = respTo.balance;
+
+                        let optionsPutTo = {
+                            method: 'PUT',
+                            body: {
+                                balance: balanceTo + options.body.amount
+                            },
+                            uri: `https://local-coin.firebaseio.com/wallets/${options.body.to}.json`,
+                            json: true
+                        }
+
+
+                        request(optionsPutTo).then(function (respPutTo) {
+
+                        });
+
+                    });
+                    request(options).then(function (respPost) {
+                    });
+                    res.sendStatus(200);
+                }
+                else {
+                    res.sendStatus(422);
+                }
+            });
+        }
+
     });
 }
 
