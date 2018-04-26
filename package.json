@@ -1,0 +1,31 @@
+{
+  "name": "localcoinserver",
+  "version": "1.0.0",
+  "description": "Rest API for Transactions with LocalCoin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jordsan/LocalCoin-Server.git"
+  },
+  "keywords": [
+    "REST",
+    "API",
+    "LocalCoin"
+  ],
+  "author": "Jordan Michaels",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jordsan/LocalCoin-Server/issues"
+  },
+  "homepage": "https://github.com/Jordsan/LocalCoin-Server#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "nodemon": "^1.17.3",
+    "request": "^2.85.0"
+  }
+}
