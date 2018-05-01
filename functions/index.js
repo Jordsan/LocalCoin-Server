@@ -1,9 +1,11 @@
 const functions = require('firebase-functions');
 var express = require("express");
+var cors = require('cors')
 var bodyParser = require("body-parser");
 var routes = require("./routes/routes.js");
 var app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
